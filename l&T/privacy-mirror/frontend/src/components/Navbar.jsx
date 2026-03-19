@@ -10,14 +10,9 @@ const Navbar = ({ user, setUser }) => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const handleLogout = async () => {
-    try {
-      await api.post('/logout');
-      setUser(null);
-      navigate('/');
-    } catch (e) {
-      console.error(e);
-    }
+  const handleLogout = () => {
+    setUser(null);
+    navigate('/');
   };
 
   const navLinks = [
