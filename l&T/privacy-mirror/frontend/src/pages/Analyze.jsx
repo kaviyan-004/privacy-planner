@@ -11,7 +11,6 @@ ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, T
 const Analyze = () => {
   const [postText, setPostText] = useState('');
   const [file, setFile] = useState(null);
-  const [csvContent, setCsvContent] = useState('');
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
   const [animatedScore, setAnimatedScore] = useState(0);
@@ -28,20 +27,12 @@ const Analyze = () => {
     if (f.name.match(/\.(jpg|jpeg|png|webp)$/i)) {
       setFile(f);
       setImagePreview(URL.createObjectURL(f));
-      setCsvContent('');
-    } else if (f.name.endsWith('.csv')) {
-      setFile(f);
-      setImagePreview(null);
-      const reader = new FileReader();
-      reader.onload = (evt) => setCsvContent(evt.target.result);
-      reader.readAsText(f);
     }
   };
 
   const handleReset = () => {
     setPostText('');
     setFile(null);
-    setCsvContent('');
     setImagePreview(null);
     setResult(null);
     setTerminalLines([]);
@@ -174,7 +165,7 @@ const Analyze = () => {
   };
 
   const handleAnalyze = async () => {
-    if (!postText && !csvContent && !file) return;
+    if (!postText && !file) return;
     setLoading(true);
     setResult(null);
     setTerminalLines([]);
@@ -201,7 +192,8 @@ const Analyze = () => {
         risks: rawRisks,
         safeCaption: resData.safe_version,
         timestamp: Date.now(),
-        type: file && !postText ? 'Image Upload' : file && postText ? 'Image + Text' : 'Text Post'
+        type: file && !postText ? 'Image Upload' : file && postText ? 'Image + Text' : 'Text Post',
+        imagePreview: imagePreview // Store preview for results
       };
 
       const existing = JSON.parse(localStorage.getItem('privacyMirrorHistory') || '[]');
@@ -321,10 +313,10 @@ const Analyze = () => {
           </div>
 
           <div style={{ display: 'flex', gap: '1rem', marginTop: '24px' }}>
-            <button onClick={handleAnalyze} disabled={loading || (!postText && !csvContent && !file)} className="btn-primary animate-fade-up stagger-3" style={{ flex: 1, padding: '1.25rem', fontSize: '1.125rem' }}>
+            <button onClick={handleAnalyze} disabled={loading || (!postText && !file)} className="btn-primary" style={{ flex: 1, padding: '1.25rem', fontSize: '1.125rem', opacity: loading || (!postText && !file) ? 0.6 : 1 }}>
               {loading ? <div className="animate-spin" style={{ width: 24, height: 24, borderTop: '2px solid white', borderRadius: '50%', margin: 'auto' }}></div> : <><Search size={22} /> Analyze</>}
             </button>
-            <button onClick={handleReset} disabled={loading || (!postText && !csvContent && !file && !result)} className="btn-outline animate-fade-up stagger-3" style={{ padding: '1.25rem', fontSize: '1.125rem' }}>
+            <button onClick={handleReset} disabled={loading || (!postText && !file && !result)} className="btn-outline" style={{ padding: '1.25rem', fontSize: '1.125rem' }}>
               Reset
             </button>
           </div>
@@ -365,8 +357,17 @@ const Analyze = () => {
                   </div>
                 </div>
 
-                {/* Card 2: Privacy Profile */}
-                <div className="card animate-fade-up stagger-1" style={{ padding: '20px', borderRadius: '16px' }}>
+                {/* Card 2: Analyzed Image (New) */}
+                {imagePreview && (
+                  <div className="card animate-fade-up stagger-1" style={{ padding: '20px', borderRadius: '16px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+                    <h3 style={{ fontSize: '1.125rem', color: 'var(--text-secondary)', marginBottom: '1rem', fontWeight: 600, width: '100%' }}>Analyzed Image</h3>
+                    <img src={imagePreview} alt="Analyzed" style={{ maxWidth: '100%', maxHeight: '200px', borderRadius: '12px', border: '1px solid var(--border-normal)' }} />
+                    <div style={{ marginTop: '1rem', fontSize: '0.875rem', color: 'var(--green-safe)', fontWeight: 600 }}>Object & Metadata Scan Complete</div>
+                  </div>
+                )}
+
+                {/* Card 3: Privacy Profile */}
+                <div className="card animate-fade-up stagger-2" style={{ padding: '20px', borderRadius: '16px' }}>
                   <h3 style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', fontSize: '1.125rem', marginBottom: '1.5rem', color: 'var(--text-secondary)', fontWeight: 600 }}>Privacy Profile</h3>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
                     {Object.entries(result.profile || {}).map(([key, val], i) => (
@@ -380,8 +381,8 @@ const Analyze = () => {
                   </div>
                 </div>
 
-                {/* Card 3: Hacker Simulation Mode */}
-                <div className="card animate-fade-up stagger-2" style={{ padding: '20px', borderRadius: '16px' }}>
+                {/* Card 4: Hacker Simulation Mode */}
+                <div className="card animate-fade-up stagger-3" style={{ padding: '20px', borderRadius: '16px' }}>
                   <h3 style={{ fontSize: '1.125rem', marginBottom: '0.25rem', color: 'var(--red-danger)', display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 600 }}><Terminal size={18} /> Hacker Simulation Mode</h3>
                   <p style={{ color: 'var(--text-muted)', marginBottom: '1.5rem', fontSize: '0.875rem' }}>If I were an attacker...</p>
 
@@ -396,13 +397,13 @@ const Analyze = () => {
                   <div style={{ height: '3px', width: '100%', background: 'linear-gradient(90deg, var(--red-danger) 0%, transparent 100%)', marginTop: '1.5rem', opacity: 0.3, borderRadius: '2px' }}></div>
                 </div>
 
-                {/* Card 4: Smart Safe Rewrite */}
-                <div className="card animate-fade-up stagger-3" style={{ padding: '20px', borderRadius: '16px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                {/* Card 5: Smart Safe Rewrite */}
+                <div className="card animate-fade-up stagger-4" style={{ padding: '20px', borderRadius: '16px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
                   <h3 style={{ fontSize: '1.125rem', marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--text-secondary)', fontWeight: 600 }}><Edit3 size={18} /> Smart Safe Rewrite</h3>
 
                   <div style={{ background: 'rgba(239, 68, 68, 0.05)', padding: '1rem', borderRadius: '12px', border: '1px solid var(--red-glow)' }}>
                     <div style={{ color: 'var(--red-danger)', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.75rem' }}>RISKY VERSION</div>
-                    <div style={{ color: 'var(--text-secondary)', fontStyle: 'italic', fontSize: '0.875rem' }}>{postText}</div>
+                    <div style={{ color: 'var(--text-secondary)', fontStyle: 'italic', fontSize: '0.875rem' }}>{postText || "Uploaded Image (Metadata Leak)"}</div>
                   </div>
 
                   <div style={{ background: 'rgba(16, 185, 129, 0.1)', padding: '1rem', borderRadius: '12px', border: '1px solid var(--green-glow)' }}>
