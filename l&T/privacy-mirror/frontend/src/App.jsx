@@ -15,22 +15,13 @@ import WhatIf from './pages/WhatIf';
 import About from './pages/About';
 
 function App() {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
+  // Always set a default user to bypass authentication checks
+  const [user, setUser] = useState({ username: 'Demo User', avatar_color: 'var(--purple-primary)' });
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    // Check auth status
-    api.get('/me')
-      .then(res => {
-        if(res.data.authenticated) setUser(res.data.user);
-      })
-      .catch(err => console.error(err))
-      .finally(() => setLoading(false));
+    // Login verification bypassed
   }, []);
-
-  if (loading) return <div style={{display:'flex', justifyContent:'center', minHeight:'100vh', alignItems:'center'}}>
-    <div className="animate-spin" style={{width: 40, height: 40, borderTop: '2px solid var(--purple-primary)', borderRadius: '50%'}}></div>
-  </div>;
 
   return (
     <Router>
