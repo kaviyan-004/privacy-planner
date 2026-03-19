@@ -14,6 +14,7 @@ import Chat from './pages/Chat';
 import WhatIf from './pages/WhatIf';
 import About from './pages/About';
 import Settings from './pages/Settings';
+import History from './pages/History';
 
 function App() {
   const [user, setUser] = useState(null);
@@ -41,6 +42,7 @@ function App() {
         <Route path="/chat" element={user ? <Chat /> : <Navigate to="/login" />} />
         <Route path="/whatif" element={user ? <WhatIf /> : <Navigate to="/login" />} />
         <Route path="/settings" element={user ? <Settings user={user} /> : <Navigate to="/login" />} />
+        <Route path="/history" element={user ? <History /> : <Navigate to="/login" />} />
       </Routes>
       </div>
     </Router>
