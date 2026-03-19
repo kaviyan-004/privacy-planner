@@ -15,12 +15,11 @@ import WhatIf from './pages/WhatIf';
 import About from './pages/About';
 
 function App() {
-  // Always set a default user to bypass authentication checks
-  const [user, setUser] = useState({ username: 'Demo User', avatar_color: 'var(--purple-primary)' });
+  const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    // Login verification bypassed
+    // Backend verification bypassed explicitly; user must log in locally
   }, []);
 
   return (

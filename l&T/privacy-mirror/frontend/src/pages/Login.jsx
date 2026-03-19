@@ -13,23 +13,19 @@ const Login = ({ setUser }) => {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    console.log('Login form submitted:', { email }); // Log form data
     setError('');
     setLoading(true);
-    try {
-      console.log('Sending POST request to /api/login...');
-      const res = await api.post('/login', { email, password });
-      console.log('Response received:', res.data);
-      if (res.data.success) {
-        alert("Login successful!");
-        setUser(res.data.user);
+    
+    // Hardcoded demo authentication
+    setTimeout(() => {
+      if (email === 'student@srcas' && password === 'student') {
+        setUser({ username: 'student', email: 'student@srcas', avatar_color: 'var(--purple-primary)' });
         navigate('/dashboard');
+      } else {
+        setError('Invalid credentials. Please use student@srcas / student');
       }
-    } catch (err) {
-      setError(err.response?.data?.error || 'Failed to login');
-    } finally {
       setLoading(false);
-    }
+    }, 800);
   };
 
   return (

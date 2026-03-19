@@ -30,7 +30,6 @@ const Register = () => {
 
   const handleRegister = async (e) => {
     e.preventDefault();
-    console.log('Register form submitted:', { username, email }); // Log form data
     if(password !== confirmPassword) {
       setError("Passwords do not match"); return;
     }
@@ -40,19 +39,13 @@ const Register = () => {
 
     setError('');
     setLoading(true);
-    try {
-      console.log('Sending POST request to /api/register...');
-      const res = await api.post('/register', { username, email, password });
-      console.log('Response received:', res.data);
-      if (res.data.success) {
-        alert("Registration successful! Redirecting to login...");
-        navigate('/login');
-      }
-    } catch (err) {
-      setError(err.response?.data?.error || 'Registration failed');
-    } finally {
+    
+    // Simulate API delay for demo
+    setTimeout(() => {
+      alert("Demo registration successful! Redirecting to login...");
+      navigate('/login');
       setLoading(false);
-    }
+    }, 1000);
   };
 
   return (
